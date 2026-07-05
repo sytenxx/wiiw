@@ -37,7 +37,7 @@ except ImportError:
 # ============================================================
 # KONFIGURASI BOT
 # ============================================================
-BOT_TOKEN = "8892880847:AAEndKJ4ZpnFs3M5bu5_Rqo54pmw7pmemJs"
+BOT_TOKEN = "8892880847:AAGr5YURMe9EXmA4iXi9cxaYwKr-t5ZTzAs"
 
 # ============================================================
 # KONFIGURASI
