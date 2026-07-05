@@ -51,8 +51,10 @@ LANG = 'en'  # Default: English
 # ============================================================
 # TRANSLATIONS
 # ============================================================
-def get_texts():
-    return {
+def t(key, lang=None):
+    if lang is None:
+        lang = LANG
+    texts = {
         'en': {
             'welcome': "🎯 *HIRAKOX TOOLKIT v3.0*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *FEATURES:*\n• 🔍 BIN Lookup & Detail\n• 🔢 Generate BIN + Validasi\n• 💳 Generate Credit Cards\n• 👤 Generate Fake Users\n• ✅ CC Checker (Live/Die)\n• 📊 BIN Database (Command)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💬 *Telegram:* @hirakox\n📌 *Version:* 3.0\n\n⚠️ *For educational purposes only*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n⚡ Select menu below to start:",
             'bin_lookup_title': "🔍 *BIN LOOKUP & DETAIL*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *How to use:*\n• Send BIN: `/bin 414720`\n• Multiple: `/bin 414720 454789`\n• Upload .txt file with BIN list\n\n🔧 *Filters:*\n`/bin 414720 --vendor Visa --level Gold`\n\n📋 *Info obtained:*\n• Network, Card Type, Level\n• Bank Issuer\n• Country & Country Code\n\n📁 *Support:* Manual input & File upload",
@@ -80,6 +82,7 @@ def get_texts():
             'check_again': "🔍 Check Another BIN",
             'lang_changed': "✅ Language changed to English!",
             'lang_help': "🌍 *Change Language*\n━━━━━━━━━━━━━━━━━━━━\n\n📌 Use `/lang [en/id]`\n\n• `/lang en` - English\n• `/lang id` - Indonesia",
+            'no_results': "❌ No results found.",
         },
         'id': {
             'welcome': "🎯 *HIRAKOX TOOLKIT v3.0*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *FITUR TERSEDIA:*\n• 🔍 BIN Lookup & Detail\n• 🔢 Generate BIN + Validasi\n• 💳 Generate Kartu Kredit\n• 👤 Generate Identitas Palsu\n• ✅ CC Checker (Live/Die)\n• 📊 BIN Database (Command)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💬 *Telegram:* @hirakox\n📌 *Version:* 3.0\n\n⚠️ *Untuk tujuan edukasi saja*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n⚡ Pilih menu di bawah untuk memulai:",
@@ -108,255 +111,28 @@ def get_texts():
             'check_again': "🔍 Cek BIN Lain",
             'lang_changed': "✅ Bahasa diubah ke Indonesia!",
             'lang_help': "🌍 *Ganti Bahasa*\n━━━━━━━━━━━━━━━━━━━━\n\n📌 Gunakan `/lang [en/id]`\n\n• `/lang en` - English\n• `/lang id` - Indonesia",
+            'no_results': "❌ Tidak ada hasil ditemukan.",
         }
     }
-
-def t(key, lang=None):
-    if lang is None:
-        lang = LANG
-    texts = get_texts()
     return texts.get(lang, {}).get(key, key)
 
 # ============================================================
-# BIN DATABASE CLASS
+# BIN LOOKUP FUNCTIONS (Dengan 2 Source)
 # ============================================================
-class BINDatabase:
-    def __init__(self):
-        self.country_urls = {
-            "indonesia": "https://www.freebinchecker.com/indonesia-bin-list",
-            "usa": "https://www.freebinchecker.com/usa-bin-list",
-            "uk": "https://www.freebinchecker.com/united-kingdom-bin-list",
-            "singapore": "https://www.freebinchecker.com/singapore-bin-list",
-            "malaysia": "https://www.freebinchecker.com/malaysia-bin-list",
-            "australia": "https://www.freebinchecker.com/australia-bin-list",
-            "canada": "https://www.freebinchecker.com/canada-bin-list",
-            "germany": "https://www.freebinchecker.com/germany-bin-list",
-            "france": "https://www.freebinchecker.com/france-bin-list",
-            "netherlands": "https://www.freebinchecker.com/netherlands-bin-list",
-            "spain": "https://www.freebinchecker.com/spain-bin-list",
-            "italy": "https://www.freebinchecker.com/italy-bin-list",
-            "brazil": "https://www.freebinchecker.com/brazil-bin-list",
-            "mexico": "https://www.freebinchecker.com/mexico-bin-list",
-            "argentina": "https://www.freebinchecker.com/argentina-bin-list",
-            "chile": "https://www.freebinchecker.com/chile-bin-list",
-            "colombia": "https://www.freebinchecker.com/colombia-bin-list",
-            "peru": "https://www.freebinchecker.com/peru-bin-list",
-            "venezuela": "https://www.freebinchecker.com/venezuela-bin-list",
-            "south-africa": "https://www.freebinchecker.com/south-africa-bin-list",
-            "egypt": "https://www.freebinchecker.com/egypt-bin-list",
-            "nigeria": "https://www.freebinchecker.com/nigeria-bin-list",
-            "kenya": "https://www.freebinchecker.com/kenya-bin-list",
-            "pakistan": "https://www.freebinchecker.com/pakistan-bin-list",
-            "india": "https://www.freebinchecker.com/india-bin-list",
-            "philippines": "https://www.freebinchecker.com/philippines-bin-list",
-            "thailand": "https://www.freebinchecker.com/thailand-bin-list",
-            "vietnam": "https://www.freebinchecker.com/vietnam-bin-list",
-            "south-korea": "https://www.freebinchecker.com/south-korea-bin-list",
-            "japan": "https://www.freebinchecker.com/japan-bin-list",
-            "china": "https://www.freebinchecker.com/china-bin-list",
-            "hong-kong": "https://www.freebinchecker.com/hong-kong-bin-list",
-            "taiwan": "https://www.freebinchecker.com/taiwan-bin-list",
-            "new-zealand": "https://www.freebinchecker.com/new-zealand-bin-list",
-            "russia": "https://www.freebinchecker.com/russia-bin-list",
-            "turkey": "https://www.freebinchecker.com/turkey-bin-list",
-            "saudi-arabia": "https://www.freebinchecker.com/saudi-arabia-bin-list",
-            "uae": "https://www.freebinchecker.com/uae-bin-list",
-            "israel": "https://www.freebinchecker.com/israel-bin-list",
-            "poland": "https://www.freebinchecker.com/poland-bin-list",
-            "sweden": "https://www.freebinchecker.com/sweden-bin-list",
-            "norway": "https://www.freebinchecker.com/norway-bin-list",
-            "denmark": "https://www.freebinchecker.com/denmark-bin-list",
-            "finland": "https://www.freebinchecker.com/finland-bin-list",
-            "ireland": "https://www.freebinchecker.com/ireland-bin-list",
-            "portugal": "https://www.freebinchecker.com/portugal-bin-list",
-            "greece": "https://www.freebinchecker.com/greece-bin-list",
-            "czech-republic": "https://www.freebinchecker.com/czech-republic-bin-list",
-            "hungary": "https://www.freebinchecker.com/hungary-bin-list",
-            "romania": "https://www.freebinchecker.com/romania-bin-list",
-            "ukraine": "https://www.freebinchecker.com/ukraine-bin-list",
-            "kazakhstan": "https://www.freebinchecker.com/kazakhstan-bin-list",
-            "uzbekistan": "https://www.freebinchecker.com/uzbekistan-bin-list",
-            "bangladesh": "https://www.freebinchecker.com/bangladesh-bin-list",
-            "sri-lanka": "https://www.freebinchecker.com/sri-lanka-bin-list",
-            "nepal": "https://www.freebinchecker.com/nepal-bin-list",
-            "myanmar": "https://www.freebinchecker.com/myanmar-bin-list",
-            "cambodia": "https://www.freebinchecker.com/cambodia-bin-list",
-            "laos": "https://www.freebinchecker.com/laos-bin-list",
-            "brunei": "https://www.freebinchecker.com/brunei-bin-list",
-            "timor-leste": "https://www.freebinchecker.com/timor-leste-bin-list",
-            "papua-new-guinea": "https://www.freebinchecker.com/papua-new-guinea-bin-list",
-            "fiji": "https://www.freebinchecker.com/fiji-bin-list",
-            "morocco": "https://www.freebinchecker.com/morocco-bin-list",
-            "algeria": "https://www.freebinchecker.com/algeria-bin-list",
-            "tunisia": "https://www.freebinchecker.com/tunisia-bin-list",
-            "ghana": "https://www.freebinchecker.com/ghana-bin-list",
-            "angola": "https://www.freebinchecker.com/angola-bin-list",
-            "ethiopia": "https://www.freebinchecker.com/ethiopia-bin-list",
-            "tanzania": "https://www.freebinchecker.com/tanzania-bin-list",
-            "uganda": "https://www.freebinchecker.com/uganda-bin-list",
-            "zimbabwe": "https://www.freebinchecker.com/zimbabwe-bin-list",
-            "botswana": "https://www.freebinchecker.com/botswana-bin-list",
-            "namibia": "https://www.freebinchecker.com/namibia-bin-list",
-            "mauritius": "https://www.freebinchecker.com/mauritius-bin-list",
-            "seychelles": "https://www.freebinchecker.com/seychelles-bin-list",
-        }
-        
-        self.regions = {
-            "asia": ["indonesia", "singapore", "malaysia", "philippines", "thailand", 
-                     "vietnam", "india", "pakistan", "china", "japan", "south-korea", 
-                     "hong-kong", "taiwan", "israel", "uae", "saudi-arabia", 
-                     "bangladesh", "sri-lanka", "nepal", "myanmar", "cambodia", 
-                     "laos", "brunei", "timor-leste", "kazakhstan", "uzbekistan"],
-            
-            "europe": ["uk", "germany", "france", "netherlands", "spain", "italy", 
-                       "russia", "turkey", "poland", "sweden", "norway", "denmark", 
-                       "finland", "ireland", "portugal", "greece", "czech-republic", 
-                       "hungary", "romania", "ukraine"],
-            
-            "america": ["usa", "canada", "brazil", "mexico", "argentina", "chile", 
-                        "colombia", "peru", "venezuela"],
-            
-            "africa": ["south-africa", "egypt", "nigeria", "kenya", "morocco", 
-                       "algeria", "tunisia", "ghana", "angola", "ethiopia", 
-                       "tanzania", "uganda", "zimbabwe", "botswana", "namibia", 
-                       "mauritius", "seychelles"],
-            
-            "oceania": ["australia", "new-zealand", "papua-new-guinea", "fiji"]
-        }
+def search_bin_detail(bin_num):
+    """Cari detail BIN dari freebinchecker.com/bin-lookup/"""
+    url = f"https://www.freebinchecker.com/bin-lookup/{bin_num}"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
     
-    def scrape_bins(self, country, limit=None):
-        """Scrape BIN dari website dengan limit jumlah"""
-        if country not in self.country_urls:
-            return []
-        
-        url = self.country_urls[country]
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-        
-        try:
-            resp = requests.get(url, headers=headers, timeout=30)
-            resp.raise_for_status()
-        except Exception as e:
-            return []
-        
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        bins = []
-        
-        tables = soup.find_all("table", class_="table")
-        for table in tables:
-            rows = table.find_all("tr")
-            for row in rows:
-                cols = row.find_all("td")
-                if len(cols) >= 4:
-                    bin_cell = cols[0]
-                    link = bin_cell.find("a")
-                    bin_num = link.get_text(strip=True) if link else bin_cell.get_text(strip=True)
-                    
-                    if re.match(r'^\d{6,8}$', bin_num):
-                        bins.append({
-                            "BIN": bin_num,
-                            "Network": cols[1].get_text(strip=True).upper(),
-                            "Card Type": cols[2].get_text(strip=True).lower(),
-                            "Level": cols[3].get_text(strip=True).upper(),
-                            "Country": country.title()
-                        })
-        
-        seen = set()
-        unique = []
-        for b in bins:
-            key = b["BIN"]
-            if key not in seen:
-                seen.add(key)
-                unique.append(b)
-        
-        if limit and limit > 0:
-            unique = unique[:limit]
-        
-        return unique
-    
-    def get_bin_detail(self, bin_num):
-        """Scrape detail BIN dari freebinchecker.com/bin-lookup/"""
-        url = f"https://www.freebinchecker.com/bin-lookup/{bin_num}"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-        
-        try:
-            resp = requests.get(url, headers=headers, timeout=30)
-            resp.raise_for_status()
-        except Exception:
-            return None
-        
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        
-        card_info = {
-            "BIN": bin_num,
-            "Network": "N/A",
-            "Card Type": "N/A",
-            "Level": "N/A",
-            "Bank": "N/A",
-            "Country": "N/A",
-            "Country Code": "N/A"
-        }
-        
-        tables = soup.find_all("table", class_="table")
-        
-        for table in tables:
-            rows = table.find_all("tr")
-            for row in rows:
-                cols = row.find_all("td")
-                if len(cols) >= 2:
-                    header = cols[0].get_text(strip=True)
-                    value = cols[1].get_text(strip=True)
-                    
-                    if "IIN / BIN" in header:
-                        card_info["BIN"] = value
-                    elif "Network Company" in header:
-                        card_info["Network"] = value.upper()
-                    elif "Card Type" in header:
-                        card_info["Card Type"] = value.lower()
-                    elif "Card Level" in header:
-                        card_info["Level"] = value.upper()
-        
-        for table in tables:
-            thead = table.find("thead")
-            if thead:
-                header_text = thead.get_text(strip=True).lower()
-                if "name" in header_text and "website" in header_text:
-                    rows = table.find_all("tr")
-                    for row in rows:
-                        cols = row.find_all("td")
-                        if len(cols) >= 2:
-                            bank_name = cols[0].get_text(strip=True)
-                            if bank_name and bank_name not in ["Name", "Website", "Phone", "City"]:
-                                card_info["Bank"] = bank_name
-                                break
-        
-        for table in tables:
-            thead = table.find("thead")
-            if thead:
-                header_text = thead.get_text(strip=True).lower()
-                if "flag" in header_text and "code" in header_text:
-                    rows = table.find_all("tr")
-                    for row in rows:
-                        cols = row.find_all("td")
-                        if len(cols) >= 3:
-                            country = cols[2].get_text(strip=True)
-                            code = cols[1].get_text(strip=True)
-                            if country and country not in ["Name", "Code", "Numeric"]:
-                                card_info["Country"] = country
-                                card_info["Country Code"] = code
-                                break
-        
-        return card_info
-    
-    def get_all_countries(self):
-        return sorted(self.country_urls.keys())
-    
-    def get_countries_by_region(self, region):
-        return self.regions.get(region.lower(), [])
+    try:
+        resp = requests.get(url, headers=headers, timeout=15)
+        resp.raise_for_status()
+        return resp.text
+    except:
+        return None
 
-# ============================================================
-# BIN LOOKUP FUNCTIONS (via bins.su)
-# ============================================================
-def search_bin(bin_list, filters=None):
+def search_bin_binsu(bin_list, filters=None):
+    """Cari BIN dari bins.su (fallback)"""
     url = "https://bins.su/"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -383,6 +159,74 @@ def search_bin(bin_list, filters=None):
         return resp.text
     except Exception as e:
         return f"Error: {e}"
+
+def parse_bin_detail(html, bin_num):
+    """Parse detail BIN dari freebinchecker.com"""
+    if not html:
+        return None
+    
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    card_info = {
+        "BIN": bin_num,
+        "Network": "N/A",
+        "Card Type": "N/A",
+        "Level": "N/A",
+        "Bank": "N/A",
+        "Country": "N/A",
+        "Country Code": "N/A"
+    }
+    
+    tables = soup.find_all("table", class_="table")
+    
+    for table in tables:
+        rows = table.find_all("tr")
+        for row in rows:
+            cols = row.find_all("td")
+            if len(cols) >= 2:
+                header = cols[0].get_text(strip=True)
+                value = cols[1].get_text(strip=True)
+                
+                if "IIN / BIN" in header:
+                    card_info["BIN"] = value
+                elif "Network Company" in header:
+                    card_info["Network"] = value.upper()
+                elif "Card Type" in header:
+                    card_info["Card Type"] = value.lower()
+                elif "Card Level" in header:
+                    card_info["Level"] = value.upper()
+    
+    for table in tables:
+        thead = table.find("thead")
+        if thead:
+            header_text = thead.get_text(strip=True).lower()
+            if "name" in header_text and "website" in header_text:
+                rows = table.find_all("tr")
+                for row in rows:
+                    cols = row.find_all("td")
+                    if len(cols) >= 2:
+                        bank_name = cols[0].get_text(strip=True)
+                        if bank_name and bank_name not in ["Name", "Website", "Phone", "City"]:
+                            card_info["Bank"] = bank_name
+                            break
+    
+    for table in tables:
+        thead = table.find("thead")
+        if thead:
+            header_text = thead.get_text(strip=True).lower()
+            if "flag" in header_text and "code" in header_text:
+                rows = table.find_all("tr")
+                for row in rows:
+                    cols = row.find_all("td")
+                    if len(cols) >= 3:
+                        country = cols[2].get_text(strip=True)
+                        code = cols[1].get_text(strip=True)
+                        if country and country not in ["Name", "Code", "Numeric"]:
+                            card_info["Country"] = country
+                            card_info["Country Code"] = code
+                            break
+    
+    return card_info
 
 def parse_bin_results(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -667,6 +511,164 @@ def get_main_menu():
     return InlineKeyboardMarkup(keyboard)
 
 # ============================================================
+# BIN DATABASE CLASS
+# ============================================================
+class BINDatabase:
+    def __init__(self):
+        self.country_urls = {
+            "indonesia": "https://www.freebinchecker.com/indonesia-bin-list",
+            "usa": "https://www.freebinchecker.com/usa-bin-list",
+            "uk": "https://www.freebinchecker.com/united-kingdom-bin-list",
+            "singapore": "https://www.freebinchecker.com/singapore-bin-list",
+            "malaysia": "https://www.freebinchecker.com/malaysia-bin-list",
+            "australia": "https://www.freebinchecker.com/australia-bin-list",
+            "canada": "https://www.freebinchecker.com/canada-bin-list",
+            "germany": "https://www.freebinchecker.com/germany-bin-list",
+            "france": "https://www.freebinchecker.com/france-bin-list",
+            "netherlands": "https://www.freebinchecker.com/netherlands-bin-list",
+            "spain": "https://www.freebinchecker.com/spain-bin-list",
+            "italy": "https://www.freebinchecker.com/italy-bin-list",
+            "brazil": "https://www.freebinchecker.com/brazil-bin-list",
+            "mexico": "https://www.freebinchecker.com/mexico-bin-list",
+            "argentina": "https://www.freebinchecker.com/argentina-bin-list",
+            "chile": "https://www.freebinchecker.com/chile-bin-list",
+            "colombia": "https://www.freebinchecker.com/colombia-bin-list",
+            "peru": "https://www.freebinchecker.com/peru-bin-list",
+            "venezuela": "https://www.freebinchecker.com/venezuela-bin-list",
+            "south-africa": "https://www.freebinchecker.com/south-africa-bin-list",
+            "egypt": "https://www.freebinchecker.com/egypt-bin-list",
+            "nigeria": "https://www.freebinchecker.com/nigeria-bin-list",
+            "kenya": "https://www.freebinchecker.com/kenya-bin-list",
+            "pakistan": "https://www.freebinchecker.com/pakistan-bin-list",
+            "india": "https://www.freebinchecker.com/india-bin-list",
+            "philippines": "https://www.freebinchecker.com/philippines-bin-list",
+            "thailand": "https://www.freebinchecker.com/thailand-bin-list",
+            "vietnam": "https://www.freebinchecker.com/vietnam-bin-list",
+            "south-korea": "https://www.freebinchecker.com/south-korea-bin-list",
+            "japan": "https://www.freebinchecker.com/japan-bin-list",
+            "china": "https://www.freebinchecker.com/china-bin-list",
+            "hong-kong": "https://www.freebinchecker.com/hong-kong-bin-list",
+            "taiwan": "https://www.freebinchecker.com/taiwan-bin-list",
+            "new-zealand": "https://www.freebinchecker.com/new-zealand-bin-list",
+            "russia": "https://www.freebinchecker.com/russia-bin-list",
+            "turkey": "https://www.freebinchecker.com/turkey-bin-list",
+            "saudi-arabia": "https://www.freebinchecker.com/saudi-arabia-bin-list",
+            "uae": "https://www.freebinchecker.com/uae-bin-list",
+            "israel": "https://www.freebinchecker.com/israel-bin-list",
+            "poland": "https://www.freebinchecker.com/poland-bin-list",
+            "sweden": "https://www.freebinchecker.com/sweden-bin-list",
+            "norway": "https://www.freebinchecker.com/norway-bin-list",
+            "denmark": "https://www.freebinchecker.com/denmark-bin-list",
+            "finland": "https://www.freebinchecker.com/finland-bin-list",
+            "ireland": "https://www.freebinchecker.com/ireland-bin-list",
+            "portugal": "https://www.freebinchecker.com/portugal-bin-list",
+            "greece": "https://www.freebinchecker.com/greece-bin-list",
+            "czech-republic": "https://www.freebinchecker.com/czech-republic-bin-list",
+            "hungary": "https://www.freebinchecker.com/hungary-bin-list",
+            "romania": "https://www.freebinchecker.com/romania-bin-list",
+            "ukraine": "https://www.freebinchecker.com/ukraine-bin-list",
+            "kazakhstan": "https://www.freebinchecker.com/kazakhstan-bin-list",
+            "uzbekistan": "https://www.freebinchecker.com/uzbekistan-bin-list",
+            "bangladesh": "https://www.freebinchecker.com/bangladesh-bin-list",
+            "sri-lanka": "https://www.freebinchecker.com/sri-lanka-bin-list",
+            "nepal": "https://www.freebinchecker.com/nepal-bin-list",
+            "myanmar": "https://www.freebinchecker.com/myanmar-bin-list",
+            "cambodia": "https://www.freebinchecker.com/cambodia-bin-list",
+            "laos": "https://www.freebinchecker.com/laos-bin-list",
+            "brunei": "https://www.freebinchecker.com/brunei-bin-list",
+            "timor-leste": "https://www.freebinchecker.com/timor-leste-bin-list",
+            "papua-new-guinea": "https://www.freebinchecker.com/papua-new-guinea-bin-list",
+            "fiji": "https://www.freebinchecker.com/fiji-bin-list",
+            "morocco": "https://www.freebinchecker.com/morocco-bin-list",
+            "algeria": "https://www.freebinchecker.com/algeria-bin-list",
+            "tunisia": "https://www.freebinchecker.com/tunisia-bin-list",
+            "ghana": "https://www.freebinchecker.com/ghana-bin-list",
+            "angola": "https://www.freebinchecker.com/angola-bin-list",
+            "ethiopia": "https://www.freebinchecker.com/ethiopia-bin-list",
+            "tanzania": "https://www.freebinchecker.com/tanzania-bin-list",
+            "uganda": "https://www.freebinchecker.com/uganda-bin-list",
+            "zimbabwe": "https://www.freebinchecker.com/zimbabwe-bin-list",
+            "botswana": "https://www.freebinchecker.com/botswana-bin-list",
+            "namibia": "https://www.freebinchecker.com/namibia-bin-list",
+            "mauritius": "https://www.freebinchecker.com/mauritius-bin-list",
+            "seychelles": "https://www.freebinchecker.com/seychelles-bin-list",
+        }
+        
+        self.regions = {
+            "asia": ["indonesia", "singapore", "malaysia", "philippines", "thailand", 
+                     "vietnam", "india", "pakistan", "china", "japan", "south-korea", 
+                     "hong-kong", "taiwan", "israel", "uae", "saudi-arabia", 
+                     "bangladesh", "sri-lanka", "nepal", "myanmar", "cambodia", 
+                     "laos", "brunei", "timor-leste", "kazakhstan", "uzbekistan"],
+            
+            "europe": ["uk", "germany", "france", "netherlands", "spain", "italy", 
+                       "russia", "turkey", "poland", "sweden", "norway", "denmark", 
+                       "finland", "ireland", "portugal", "greece", "czech-republic", 
+                       "hungary", "romania", "ukraine"],
+            
+            "america": ["usa", "canada", "brazil", "mexico", "argentina", "chile", 
+                        "colombia", "peru", "venezuela"],
+            
+            "africa": ["south-africa", "egypt", "nigeria", "kenya", "morocco", 
+                       "algeria", "tunisia", "ghana", "angola", "ethiopia", 
+                       "tanzania", "uganda", "zimbabwe", "botswana", "namibia", 
+                       "mauritius", "seychelles"],
+            
+            "oceania": ["australia", "new-zealand", "papua-new-guinea", "fiji"]
+        }
+    
+    def scrape_bins(self, country, limit=None):
+        if country not in self.country_urls:
+            return []
+        
+        url = self.country_urls[country]
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        
+        try:
+            resp = requests.get(url, headers=headers, timeout=30)
+            resp.raise_for_status()
+        except Exception as e:
+            return []
+        
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        bins = []
+        
+        tables = soup.find_all("table", class_="table")
+        for table in tables:
+            rows = table.find_all("tr")
+            for row in rows:
+                cols = row.find_all("td")
+                if len(cols) >= 4:
+                    bin_cell = cols[0]
+                    link = bin_cell.find("a")
+                    bin_num = link.get_text(strip=True) if link else bin_cell.get_text(strip=True)
+                    
+                    if re.match(r'^\d{6,8}$', bin_num):
+                        bins.append({
+                            "BIN": bin_num,
+                            "Network": cols[1].get_text(strip=True).upper(),
+                            "Card Type": cols[2].get_text(strip=True).lower(),
+                            "Level": cols[3].get_text(strip=True).upper(),
+                            "Country": country.title()
+                        })
+        
+        seen = set()
+        unique = []
+        for b in bins:
+            key = b["BIN"]
+            if key not in seen:
+                seen.add(key)
+                unique.append(b)
+        
+        if limit and limit > 0:
+            unique = unique[:limit]
+        
+        return unique
+    
+    def get_all_countries(self):
+        return sorted(self.country_urls.keys())
+
+# ============================================================
 # CC GENERATOR SETTINGS
 # ============================================================
 async def cc_generator_settings_callback(query, context):
@@ -880,9 +882,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     data = query.data
     user_data = context.user_data
     lang = user_data.get('lang', 'en')
-    bindb = context.bot_data.get('bindb', BINDatabase())
     
-    # ============ BIN LOOKUP ============
     if data == "bin":
         await query.edit_message_text(
             t('bin_lookup_title', lang),
@@ -966,7 +966,6 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         )
         user_data['mode'] = 'checker'
     
-    # ============ BIN DATABASE ============
     elif data == "bindb":
         await query.edit_message_text(
             "📊 *BIN DATABASE*\n"
@@ -981,8 +980,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "• `/bindb usa all` - ambil semua BIN USA\n"
             "• `/bindb uk 50` - ambil 50 BIN UK\n\n"
             "🌍 *Daftar negara:*\n"
-            "`/bindb list` untuk lihat semua negara\n\n"
-            "📁 *Export:* Hasil bisa di export ke file",
+            "`/bindb list` untuk lihat semua negara",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("📋 Lihat Negara", callback_data="bindb_list")],
                 [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
@@ -992,59 +990,25 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         user_data['mode'] = 'bindb'
     
     elif data == "bindb_list":
+        bindb = context.bot_data.get('bindb', BINDatabase())
         countries = bindb.get_all_countries()
-        
-        page = user_data.get('bindb_page', 0)
-        per_page = 20
-        total_pages = (len(countries) - 1) // per_page + 1
-        
-        if page < 0:
-            page = 0
-            user_data['bindb_page'] = 0
-        elif page >= total_pages:
-            page = total_pages - 1
-            user_data['bindb_page'] = page
-        
-        start = page * per_page
-        end = min(start + per_page, len(countries))
-        
-        list_text = f"📋 *DAFTAR NEGARA* (halaman {page+1}/{total_pages})\n"
+        list_text = "📋 *DAFTAR NEGARA*\n"
         list_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-        
-        for i, country in enumerate(countries[start:end], start+1):
+        for i, country in enumerate(countries, 1):
             list_text += f"{i}. `{country}`\n"
-        
-        list_text += f"\nTotal {len(countries)} negara.\n"
-        list_text += "\n📌 *Cara pakai:* `/bindb [negara] [jumlah]`"
-        
-        keyboard = []
-        nav_buttons = []
-        if page > 0:
-            nav_buttons.append(InlineKeyboardButton("⬅️ Prev", callback_data="bindb_list_prev"))
-        if end < len(countries):
-            nav_buttons.append(InlineKeyboardButton("Next ➡️", callback_data="bindb_list_next"))
-        if nav_buttons:
-            keyboard.append(nav_buttons)
-        keyboard.append([InlineKeyboardButton("🔙 Kembali", callback_data="bindb")])
-        
-        await query.edit_message_text(
-            list_text,
-            reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode='Markdown'
-        )
-    
-    elif data == "bindb_list_prev":
-        user_data['bindb_page'] = max(0, user_data.get('bindb_page', 0) - 1)
-        await handle_callback_query(update, context)
-    
-    elif data == "bindb_list_next":
-        countries = bindb.get_all_countries()
-        per_page = 20
-        total_pages = (len(countries) - 1) // per_page + 1
-        current_page = user_data.get('bindb_page', 0)
-        if current_page < total_pages - 1:
-            user_data['bindb_page'] = current_page + 1
-        await handle_callback_query(update, context)
+            if i % 30 == 0:
+                await query.edit_message_text(list_text, parse_mode='Markdown')
+                list_text = ""
+                await asyncio.sleep(0.5)
+        if list_text:
+            await query.edit_message_text(
+                list_text + f"\nTotal {len(countries)} negara.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("🔙 Kembali", callback_data="bindb")]
+                ]),
+                parse_mode='Markdown'
+            )
+        return
     
     elif data == "about":
         await query.edit_message_text(
@@ -1111,7 +1075,6 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         )
         user_data['mode'] = ''
     
-    # ============ CC GENERATOR SETTINGS ============
     elif data == "cc_settings":
         await cc_generator_settings_callback(query, context)
     
@@ -1195,7 +1158,6 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     elif data == "cc_generate_now":
         await cc_generate_now_callback(query, context)
     
-    # ============ BIN VALIDATION ============
     elif data == "validate_bin":
         if 'pending_bins' in user_data:
             bin_list = user_data['pending_bins']
@@ -1207,7 +1169,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             await loading_msg.edit_text("🔍 Menganalisis data BIN...")
             await asyncio.sleep(0.5)
             
-            html = search_bin(bin_list, {})
+            html = search_bin_binsu(bin_list, {})
             if "Error" in html:
                 await loading_msg.edit_text(f"❌ Error: {html}")
                 return
@@ -1235,7 +1197,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
                 )
                 user_data['bin_results'] = results
             else:
-                await loading_msg.edit_text("❌ Tidak ada hasil ditemukan.")
+                await loading_msg.edit_text(t('no_results', lang))
     
     elif data == "skip_validate":
         await query.edit_message_text(
@@ -1245,7 +1207,6 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             ])
         )
     
-    # ============ EXPORTS ============
     elif data == "export_bin":
         if 'bin_results' in user_data:
             results = user_data['bin_results']
@@ -1469,14 +1430,14 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         await loading_msg.edit_text(f"📁 Memproses {len(bin_list)} BIN...")
         
-        html = search_bin(bin_list, {})
+        html = search_bin_binsu(bin_list, {})
         if "Error" in html:
             await loading_msg.edit_text(f"❌ Error: {html}")
             return
         
         results = parse_bin_results(html)
         if results:
-            result_text = t('results', lang).format(len(results))
+            result_text = f"✅ *Hasil {len(results)} BIN*\n━━━━━━━━━━━━━━━━━━━━\n\n"
             for idx, item in enumerate(results[:20], 1):
                 result_text += f"*{idx}. BIN:* `{item['bin']}`\n"
                 result_text += f"   🌍 {item['country']} | 🏛️ {item['vendor']}\n"
@@ -1497,7 +1458,7 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             context.user_data['bin_results'] = results
         else:
-            await loading_msg.edit_text("❌ Tidak ada hasil ditemukan.")
+            await loading_msg.edit_text(t('no_results', lang))
     
     elif mode == 'checker':
         loading_msg = await update.message.reply_text("📁 Memproses file...")
@@ -1654,39 +1615,33 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif command == '/check':
         await handle_cc_checker(update, context)
     
-    # ============ BIN DATABASE COMMANDS ============
     elif command == '/bindb':
         if len(parts) == 1:
             await update.message.reply_text(
                 "📊 *BIN DATABASE*\n"
                 "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                "📌 *Cara Penggunaan (COMMAND):*\n\n"
+                "📌 *Cara Penggunaan:*\n\n"
                 "📋 *Lihat daftar negara:*\n"
                 "`/bindb list`\n\n"
                 "📥 *Ambil BIN:*\n"
                 "`/bindb [negara] [jumlah]`\n\n"
                 "📝 *Contoh:*\n"
-                "• `/bindb indonesia 10` - ambil 10 BIN Indonesia\n"
-                "• `/bindb usa all` - ambil semua BIN USA\n"
-                "• `/bindb uk 50` - ambil 50 BIN UK\n\n"
-                "🌍 *Daftar negara:*\n"
-                "`/bindb list` untuk lihat semua negara",
+                "• `/bindb indonesia 10`\n"
+                "• `/bindb usa all`\n"
+                "• `/bindb uk 50`",
                 parse_mode='Markdown'
             )
             return
         
         if parts[1].lower() == 'list':
             countries = bindb.get_all_countries()
-            list_text = "📋 *DAFTAR NEGARA*\n"
-            list_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            
+            list_text = "📋 *DAFTAR NEGARA*\n━━━━━━━━━━━━━━━━━━━━━━━\n\n"
             for i, country in enumerate(countries, 1):
                 list_text += f"{i}. `{country}`\n"
                 if i % 30 == 0:
                     await update.message.reply_text(list_text, parse_mode='Markdown')
                     list_text = ""
                     await asyncio.sleep(0.5)
-            
             if list_text:
                 await update.message.reply_text(
                     list_text + f"\nTotal {len(countries)} negara.",
@@ -1697,8 +1652,7 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if len(parts) < 3:
             await update.message.reply_text(
                 "❌ Format: `/bindb [negara] [jumlah]`\n"
-                "Contoh: `/bindb indonesia 10`\n"
-                "Atau: `/bindb usa all`",
+                "Contoh: `/bindb indonesia 10`",
                 parse_mode='Markdown'
             )
             return
@@ -1708,20 +1662,11 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         countries = bindb.get_all_countries()
         if country not in countries:
-            suggestions = [c for c in countries if country in c]
-            if suggestions:
-                await update.message.reply_text(
-                    f"❌ Negara '{country}' tidak ditemukan.\n"
-                    f"Mungkin maksud Anda: `{suggestions[0]}`?\n\n"
-                    f"Gunakan `/bindb list` untuk lihat semua negara.",
-                    parse_mode='Markdown'
-                )
-            else:
-                await update.message.reply_text(
-                    f"❌ Negara '{country}' tidak ditemukan.\n"
-                    f"Gunakan `/bindb list` untuk lihat semua negara.",
-                    parse_mode='Markdown'
-                )
+            await update.message.reply_text(
+                f"❌ Negara '{country}' tidak ditemukan.\n"
+                f"Gunakan `/bindb list` untuk lihat semua negara.",
+                parse_mode='Markdown'
+            )
             return
         
         if limit_str == 'all':
@@ -1735,7 +1680,7 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("❌ Jumlah harus angka atau 'all'!")
             return
         
-        loading_msg = await update.message.reply_text(f"📊 Mengambil {limit if limit else 'semua'} BIN dari {country.title()}...\n⏳ Mohon tunggu...")
+        loading_msg = await update.message.reply_text(f"📊 Mengambil BIN dari {country.title()}...")
         await asyncio.sleep(0.5)
         await loading_msg.edit_text(f"🔄 Scraping {country.title()}...")
         await asyncio.sleep(0.5)
@@ -1783,13 +1728,12 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 # ============================================================
-# BIN LOOKUP (DENGAN DETAIL - PAKE bins.su)
+# BIN LOOKUP HANDLER (DENGAN 2 SOURCE)
 # ============================================================
 async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
     lang = context.user_data.get('lang', 'en')
-    bindb = context.bot_data.get('bindb', BINDatabase())
     
     if parts and parts[0] in ['/bin']:
         parts = parts[1:]
@@ -1821,45 +1765,45 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(t('no_valid_bin', lang))
         return
     
-    # Jika hanya 1 BIN, coba ambil detail dari freebinchecker
+    # Jika hanya 1 BIN, coba detail dari freebinchecker dulu
     if len(bin_list) == 1:
         bin_num = bin_list[0]
-        
-        # Coba detail dari freebinchecker
         loading_msg = await update.message.reply_text(f"🔄 Mencari detail BIN {bin_num}...")
         await asyncio.sleep(0.5)
         await loading_msg.edit_text("⏳ Mengakses server...")
         await asyncio.sleep(0.5)
         
-        detail = bindb.get_bin_detail(bin_num)
+        # Coba dari freebinchecker
+        html = search_bin_detail(bin_num)
+        if html:
+            detail = parse_bin_detail(html, bin_num)
+            if detail and detail['Network'] != "N/A":
+                result_text = t('bin_detail_title', lang).format(detail['BIN'])
+                result_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                result_text += t('card_info', lang)
+                result_text += t('network', lang).format(detail['Network'])
+                result_text += t('card_type', lang).format(detail['Card Type'])
+                result_text += t('level', lang).format(detail['Level'])
+                result_text += "\n" + t('bank_info', lang)
+                result_text += t('bank_name', lang).format(detail['Bank'])
+                result_text += "\n" + t('country_info', lang)
+                result_text += t('country', lang).format(detail['Country'])
+                result_text += t('country_code', lang).format(detail['Country Code'])
+                
+                keyboard = [
+                    [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")],
+                    [InlineKeyboardButton("🔍 " + t('check_again', lang), callback_data="bin")]
+                ]
+                await loading_msg.edit_text(
+                    result_text,
+                    reply_markup=InlineKeyboardMarkup(keyboard),
+                    parse_mode='Markdown'
+                )
+                return
         
-        if detail and detail['Network'] != "N/A":
-            result_text = t('bin_detail_title', lang).format(detail['BIN'])
-            result_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            result_text += t('card_info', lang)
-            result_text += t('network', lang).format(detail['Network'])
-            result_text += t('card_type', lang).format(detail['Card Type'])
-            result_text += t('level', lang).format(detail['Level'])
-            result_text += "\n" + t('bank_info', lang)
-            result_text += t('bank_name', lang).format(detail['Bank'])
-            result_text += "\n" + t('country_info', lang)
-            result_text += t('country', lang).format(detail['Country'])
-            result_text += t('country_code', lang).format(detail['Country Code'])
-            
-            keyboard = [
-                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")],
-                [InlineKeyboardButton("🔍 " + t('check_again', lang), callback_data="bin")]
-            ]
-            await loading_msg.edit_text(
-                result_text,
-                reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode='Markdown'
-            )
-            return
-        else:
-            # Jika gagal, coba via bins.su
-            await loading_msg.edit_text("🔄 Mencari via bins.su...")
-            await asyncio.sleep(0.5)
+        # Kalo gagal, coba via bins.su
+        await loading_msg.edit_text("🔄 Mencari via bins.su...")
+        await asyncio.sleep(0.5)
     
     # Multiple BIN atau fallback ke bins.su
     if len(bin_list) > 50:
@@ -1873,7 +1817,7 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await loading_msg.edit_text(t('searching', lang).format(len(bin_list)))
     await asyncio.sleep(0.5)
     
-    html = search_bin(bin_list, filters)
+    html = search_bin_binsu(bin_list, filters)
     if "Error" in html:
         await loading_msg.edit_text(t('error', lang).format(html))
         return
@@ -1902,7 +1846,7 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         context.user_data['bin_results'] = results
     else:
-        await loading_msg.edit_text("❌ Tidak ada hasil ditemukan.")
+        await loading_msg.edit_text(t('no_results', lang))
 
 # ============================================================
 # GEN BIN + VALID
