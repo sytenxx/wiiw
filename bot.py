@@ -46,143 +46,76 @@ VENDOR_LIST = ['Visa', 'MASTERCARD', 'AMERICAN EXPRESS', 'Maestro', 'Discover', 
 LEVEL_LIST = ['Classic/Standard', 'Gold/Prem', 'Platinum', 'Signature', 'Electron', 'Prepaid', 'Business', 'Corporate', 'Infinite', 'Cash', 'Purchasing', 'Virtual']
 TYPE_LIST = ['Credit', 'Debit', 'CHARGE CARD', 'unknown']
 
-LANG = 'en'
+LANG = 'en'  # Default: English
 
 # ============================================================
 # TRANSLATIONS
 # ============================================================
-def t(key):
-    texts = {
+def get_texts():
+    return {
         'en': {
-            'menu_title': "MAIN MENU",
-            'menu_1': "1. BIN Lookup (Search/Validate)",
-            'menu_2': "2. Generate Credit Cards ",
-            'menu_3': "3. Generate Fake Users",
-            'menu_4': "4. CC Checker (Validate Cards)",
-            'menu_5': "5. About",
-            'menu_6': "6. Exit",
-            'menu_choice': "Choose [1-6]: ",
-            'bin_menu': "BIN LOOKUP",
-            'input_mode': "INPUT MODE",
-            'input_1': "1. Manual (space/comma separated)",
-            'input_2': "2. Read from file",
-            'input_3': "3. Generate + Validate (suffix 1-9)",
-            'input_choice': "Choose [1-3]: ",
-            'filename': "Filename: ",
-            'manual_input': "Enter BINs (space/comma): ",
-            'invalid_bin': "[!] No valid BIN found.",
-            'file_not_found': "[!] File '{0}' not found.",
-            'loaded': "[+] Loaded {0} BINs from {1}",
-            'filter_title': "FILTER OPTIONS (0 to skip and comma for many choices)",
-            'select_vendor': "Select VENDOR:",
-            'select_level': "Select LEVEL:",
-            'select_type': "Select TYPE:",
-            'country_prompt': "Country (2 letters, e.g. US): ",
-            'bank_prompt': "Bank name (partial): ",
-            'searching': "[*] Searching {0} BINs ...",
-            'validating': "[*] Validating {0} BINs ...",
-            'no_results': "[-] No results from server.",
-            'try_no_filter': "[*] Try without filters.",
-            'results_found': "[+] Found {0} results:",
-            'saved': "[+] Saved to {0}",
-            'generate_title': "GENERATE + VALIDATE",
-            'suffix_prompt': "Enter suffix (1-9): ",
-            'suffix_invalid': "[!] Suffix must be 1-9!",
-            'count_prompt': "How many to generate? (default: 10): ",
-            'generated': "[+] Generated {0} BINs:",
-            'validate_ask': "Validate to web? (y/n): ",
-            'save_ask': "Save to file? (y/n): ",
-            'save_filename': "Filename (default: generated.txt): ",
-            'saved_generated': "[+] Saved to {0}",
-            'error': "[!] Error: {0}",
-            'debug': "[DEBUG] HTML:",
-            'bin': "BIN",
-            'country': "Country",
-            'vendor': "Vendor",
-            'type': "Type",
-            'level': "Level",
-            'bank': "Bank",
-            'skip': "skip",
-            'exit': "Exiting... Goodbye!",
-            'checker_title': "CC CHECKER",
-            'checker_mode': "Check mode:",
-            'checker_1': "1. Single Check",
-            'checker_2': "2. Bulk Check (from file)",
-            'checker_3': "3. Bulk Check (manual input)",
-            'checker_choice': "Choose [1-3]: ",
-            'checking': "[*] Checking {0} cards...",
-            'export_mode': "Export mode:",
-            'export_1': "1. Full Report (with details)",
-            'export_2': "2. LIVE Cards Only (format: number|mm|yy|cvv)",
-            'export_choice': "Choose [1/2]: ",
-            'saved_live': "[+] {0} LIVE cards saved to {1}",
+            'welcome': "🎯 *HIRAKOX TOOLKIT v3.0*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *FEATURES:*\n• 🔍 BIN Lookup & Detail\n• 🔢 Generate BIN + Validasi\n• 💳 Generate Credit Cards\n• 👤 Generate Fake Users\n• ✅ CC Checker (Live/Die)\n• 📊 BIN Database (Command)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💬 *Telegram:* @hirakox\n📌 *Version:* 3.0\n\n⚠️ *For educational purposes only*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n⚡ Select menu below to start:",
+            'bin_lookup_title': "🔍 *BIN LOOKUP & DETAIL*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *How to use:*\n• Send BIN: `/bin 414720`\n• Multiple: `/bin 414720 454789`\n• Upload .txt file with BIN list\n\n🔧 *Filters:*\n`/bin 414720 --vendor Visa --level Gold`\n\n📋 *Info obtained:*\n• Network, Card Type, Level\n• Bank Issuer\n• Country & Country Code\n\n📁 *Support:* Manual input & File upload",
+            'bin_lookup_help': "🔍 *BIN LOOKUP & DETAIL*\n━━━━━━━━━━━━━━━━━━━━\n\n📌 Send BIN (6-8 digits):\nExample: `414720` or `414720 454789`\n\n📋 *Info obtained:*\n• Network (Visa/Mastercard/AMEX)\n• Card Type (Credit/Debit)\n• Level (Platinum/Standard/Gold)\n• Bank Issuer\n• Country & Country Code\n\n📁 Or upload .txt file",
+            'no_valid_bin': "❌ No valid BIN found!",
+            'max_bin': "⚠️ Maximum 50 BIN per request!",
+            'searching_bin': "🔄 Searching BIN...",
+            'sending_request': "⏳ Sending request to server...",
+            'searching': "🔍 Searching {0} BIN...",
+            'error': "❌ Error: {0}",
+            'results': "✅ *Results {0} BIN*\n━━━━━━━━━━━━━━━━━━━━\n\n",
+            'and_more': "_... and {0} more results_",
+            'export_file': "📁 Export to File",
+            'back': "🔙 Back",
+            'bin_detail_title': "🔍 *DETAIL BIN: {0}*\n━━━━━━━━━━━━━━━━━━━━━━━\n\n",
+            'card_info': "📌 *Card Information:*\n",
+            'network': "  • Network      : `{0}`\n",
+            'card_type': "  • Card Type    : `{0}`\n",
+            'level': "  • Level        : `{0}`\n",
+            'bank_info': "🏦 *Bank Issuer:*\n",
+            'bank_name': "  • Bank Name    : `{0}`\n",
+            'country_info': "🌏 *Country Issuer:*\n",
+            'country': "  • Country      : `{0}`\n",
+            'country_code': "  • Country Code : `{0}`\n",
+            'check_again': "🔍 Check Another BIN",
+            'lang_changed': "✅ Language changed to English!",
+            'lang_help': "🌍 *Change Language*\n━━━━━━━━━━━━━━━━━━━━\n\n📌 Use `/lang [en/id]`\n\n• `/lang en` - English\n• `/lang id` - Indonesia",
         },
         'id': {
-            'menu_title': "MENU UTAMA",
-            'menu_1': "1. Cari BIN (Lookup/Validasi)",
-            'menu_2': "2. Generate Kartu Kredit",
-            'menu_3': "3. Generate User Palsu",
-            'menu_4': "4. CC Checker (Validasi Kartu)",
-            'menu_5': "5. Tentang",
-            'menu_6': "6. Keluar",
-            'menu_choice': "Pilih [1-6]: ",
-            'bin_menu': "BIN LOOKUP",
-            'input_mode': "MODE INPUT",
-            'input_1': "1. Manual (pisah spasi/koma)",
-            'input_2': "2. Baca dari file",
-            'input_3': "3. Generate + Validasi (suffix 1-9)",
-            'input_choice': "Pilih [1-3]: ",
-            'filename': "Nama file: ",
-            'manual_input': "Masukkan BIN (spasi/koma): ",
-            'invalid_bin': "[!] Ga ada BIN valid.",
-            'file_not_found': "[!] File '{0}' ga ketemu.",
-            'loaded': "[+] Load {0} BIN dari {1}",
-            'filter_title': "FILTER OPSI (0 untuk lewati dan comma untuk banyak pilihan)",
-            'select_vendor': "Pilih VENDOR:",
-            'select_level': "Pilih LEVEL:",
-            'select_type': "Pilih TYPE:",
-            'country_prompt': "Country (2 huruf, contoh: US): ",
-            'bank_prompt': "Nama bank (partial): ",
-            'searching': "[*] Mencari {0} BIN ...",
-            'validating': "[*] Validasi {0} BIN ...",
-            'no_results': "[-] Ga ada hasil dari server.",
-            'try_no_filter': "[*] Coba tanpa filter.",
-            'results_found': "[+] Ditemukan {0} hasil:",
-            'saved': "[+] Disimpan ke {0}",
-            'generate_title': "GENERATE + VALIDASI",
-            'suffix_prompt': "Masukkan suffix (1-9): ",
-            'suffix_invalid': "[!] Suffix harus 1-9!",
-            'count_prompt': "Mau generate berapa? (default: 10): ",
-            'generated': "[+] Generate {0} BIN:",
-            'validate_ask': "Validasi ke web? (y/n): ",
-            'save_ask': "Simpan ke file? (y/n): ",
-            'save_filename': "Nama file (default: generated.txt): ",
-            'saved_generated': "[+] Disimpan ke {0}",
-            'error': "[!] Error: {0}",
-            'debug': "[DEBUG] HTML:",
-            'bin': "BIN",
-            'country': "Country",
-            'vendor': "Vendor",
-            'type': "Type",
-            'level': "Level",
-            'bank': "Bank",
-            'skip': "lewati",
-            'exit': "Keluar... Sampai jumpa!",
-            'checker_title': "CC CHECKER",
-            'checker_mode': "Mode cek:",
-            'checker_1': "1. Cek Satu",
-            'checker_2': "2. Cek Banyak (dari file)",
-            'checker_3': "3. Cek Banyak (input manual)",
-            'checker_choice': "Pilih [1-3]: ",
-            'checking': "[*] Mengecek {0} kartu...",
-            'export_mode': "Mode export:",
-            'export_1': "1. Full Report (dengan detail)",
-            'export_2': "2. Hanya Kartu LIVE (format: number|mm|yy|cvv)",
-            'export_choice': "Pilih [1/2]: ",
-            'saved_live': "[+] {0} kartu LIVE disimpan ke {1}",
+            'welcome': "🎯 *HIRAKOX TOOLKIT v3.0*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *FITUR TERSEDIA:*\n• 🔍 BIN Lookup & Detail\n• 🔢 Generate BIN + Validasi\n• 💳 Generate Kartu Kredit\n• 👤 Generate Identitas Palsu\n• ✅ CC Checker (Live/Die)\n• 📊 BIN Database (Command)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💬 *Telegram:* @hirakox\n📌 *Version:* 3.0\n\n⚠️ *Untuk tujuan edukasi saja*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n⚡ Pilih menu di bawah untuk memulai:",
+            'bin_lookup_title': "🔍 *BIN LOOKUP & DETAIL*\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 *Cara Penggunaan:*\n• Kirim BIN: `/bin 414720`\n• Multiple: `/bin 414720 454789`\n• Upload file .txt berisi daftar BIN\n\n🔧 *Filter:*\n`/bin 414720 --vendor Visa --level Gold`\n\n📋 *Info yang didapat:*\n• Network, Card Type, Level\n• Bank Issuer\n• Country & Country Code\n\n📁 *Support:* Input manual & Upload file",
+            'bin_lookup_help': "🔍 *BIN LOOKUP & DETAIL*\n━━━━━━━━━━━━━━━━━━━━\n\n📌 Kirim BIN (6-8 digit):\nContoh: `414720` atau `414720 454789`\n\n📋 *Info yang didapat:*\n• Network (Visa/Mastercard/AMEX)\n• Card Type (Credit/Debit)\n• Level (Platinum/Standard/Gold)\n• Bank Issuer\n• Country & Country Code\n\n📁 Atau upload file .txt",
+            'no_valid_bin': "❌ Tidak ada BIN valid!",
+            'max_bin': "⚠️ Maksimal 50 BIN per request!",
+            'searching_bin': "🔄 Mencari BIN...",
+            'sending_request': "⏳ Mengirim request ke server...",
+            'searching': "🔍 Mencari {0} BIN...",
+            'error': "❌ Error: {0}",
+            'results': "✅ *Hasil {0} BIN*\n━━━━━━━━━━━━━━━━━━━━\n\n",
+            'and_more': "_... dan {0} hasil lainnya_",
+            'export_file': "📁 Export ke File",
+            'back': "🔙 Kembali",
+            'bin_detail_title': "🔍 *DETAIL BIN: {0}*\n━━━━━━━━━━━━━━━━━━━━━━━\n\n",
+            'card_info': "📌 *Card Information:*\n",
+            'network': "  • Network      : `{0}`\n",
+            'card_type': "  • Card Type    : `{0}`\n",
+            'level': "  • Level        : `{0}`\n",
+            'bank_info': "🏦 *Bank Issuer:*\n",
+            'bank_name': "  • Bank Name    : `{0}`\n",
+            'country_info': "🌏 *Country Issuer:*\n",
+            'country': "  • Country      : `{0}`\n",
+            'country_code': "  • Country Code : `{0}`\n",
+            'check_again': "🔍 Cek BIN Lain",
+            'lang_changed': "✅ Bahasa diubah ke Indonesia!",
+            'lang_help': "🌍 *Ganti Bahasa*\n━━━━━━━━━━━━━━━━━━━━\n\n📌 Gunakan `/lang [en/id]`\n\n• `/lang en` - English\n• `/lang id` - Indonesia",
         }
     }
-    return texts[LANG].get(key, key)
+
+def t(key, lang=None):
+    if lang is None:
+        lang = LANG
+    texts = get_texts()
+    return texts.get(lang, {}).get(key, key)
 
 # ============================================================
 # BIN DATABASE CLASS
@@ -421,7 +354,7 @@ class BINDatabase:
         return self.regions.get(region.lower(), [])
 
 # ============================================================
-# BIN LOOKUP FUNCTIONS
+# BIN LOOKUP FUNCTIONS (via bins.su)
 # ============================================================
 def search_bin(bin_list, filters=None):
     url = "https://bins.su/"
@@ -933,32 +866,9 @@ async def cc_generate_now_callback(query, context):
 # ============================================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    welcome_text = """
-🎯 *HIRAKOX TOOLKIT v3.0*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📌 *FITUR TERSEDIA:*
-• 🔍 BIN Lookup & Detail
-• 🔢 Generate BIN + Validasi
-• 💳 Generate Kartu Kredit
-• 👤 Generate Identitas Palsu
-• ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Command)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💬 *Telegram:* @hirakox
-📌 *Version:* 3.0
-
-⚠️ *Untuk tujuan edukasi saja*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚡ Pilih menu di bawah untuk memulai:
-"""
+    lang = context.user_data.get('lang', 'en')
     await update.message.reply_text(
-        welcome_text,
+        t('welcome', lang),
         reply_markup=get_main_menu(),
         parse_mode='Markdown'
     )
@@ -969,26 +879,15 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     
     data = query.data
     user_data = context.user_data
+    lang = user_data.get('lang', 'en')
     bindb = context.bot_data.get('bindb', BINDatabase())
     
     # ============ BIN LOOKUP ============
     if data == "bin":
         await query.edit_message_text(
-            "🔍 *BIN LOOKUP & DETAIL*\n"
-            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            "📌 *Cara Penggunaan:*\n"
-            "• Kirim BIN: `/bin 414720`\n"
-            "• Multiple: `/bin 414720 454789`\n"
-            "• Upload file .txt berisi daftar BIN\n\n"
-            "🔧 *Filter:*\n"
-            "`/bin 414720 --vendor Visa --level Gold`\n\n"
-            "📋 *Info yang didapat:*\n"
-            "• Network, Card Type, Level\n"
-            "• Bank Issuer\n"
-            "• Country & Country Code\n\n"
-            "📁 *Support:* Input manual & Upload file",
+            t('bin_lookup_title', lang),
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1005,7 +904,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "• `/genbin 5` (5 BIN suffix 5)\n"
             "• `/genbin 3 20` (20 BIN suffix 3)",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1027,7 +926,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "Atur bulan, tahun, CVV sebelum generate",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("⚙️ Pengaturan", callback_data="cc_settings")],
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1045,7 +944,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "• `/user US 10` - 10 dari US\n\n"
             "🌍 *Kode:* US, GB, CA, AU, DE, FR, IN",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1061,7 +960,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "📁 *Bulk Check:* Upload file .txt\n"
             "📊 *Hasil:* ✅ LIVE / ❌ DIE / ❓ UNKNOWN",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1086,7 +985,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "📁 *Export:* Hasil bisa di export ke file",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("📋 Lihat Negara", callback_data="bindb_list")],
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1095,7 +994,6 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     elif data == "bindb_list":
         countries = bindb.get_all_countries()
         
-        # Tampilkan 20 negara per halaman
         page = user_data.get('bindb_page', 0)
         per_page = 20
         total_pages = (len(countries) - 1) // per_page + 1
@@ -1166,9 +1064,10 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "✓ Bulk Processing\n\n"
             "💬 *Telegram:* @hirakox\n"
             "📌 *Version:* 3.0\n\n"
-            "⚠️ *Untuk tujuan edukasi saja*",
+            "⚠️ *Untuk tujuan edukasi saja*\n\n"
+            "🌍 *Ganti Bahasa:* `/lang id` atau `/lang en`",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1196,40 +1095,17 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "`/bindb list` - lihat daftar negara\n"
             "`/bindb indonesia 10` - ambil 10 BIN\n"
             "`/bindb usa all` - ambil semua\n\n"
+            "🌍 *Ganti Bahasa:* `/lang id` atau `/lang en`\n\n"
             "📁 *Support File:* Upload .txt",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
     
     elif data == "back":
-        welcome_text = """
-🎯 *HIRAKOX TOOLKIT v3.0*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📌 *FITUR TERSEDIA:*
-• 🔍 BIN Lookup & Detail
-• 🔢 Generate BIN + Validasi
-• 💳 Generate Kartu Kredit
-• 👤 Generate Identitas Palsu
-• ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Command)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💬 *Telegram:* @hirakox
-📌 *Version:* 3.0
-
-⚠️ *Untuk tujuan edukasi saja*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚡ Pilih menu di bawah untuk memulai:
-"""
         await query.edit_message_text(
-            welcome_text,
+            t('welcome', lang),
             reply_markup=get_main_menu(),
             parse_mode='Markdown'
         )
@@ -1255,7 +1131,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "Atur bulan, tahun, CVV sebelum generate",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("⚙️ Pengaturan", callback_data="cc_settings")],
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]),
             parse_mode='Markdown'
         )
@@ -1350,7 +1226,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
                 
                 keyboard = [
                     [InlineKeyboardButton("📁 Export ke File", callback_data="export_bin")],
-                    [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                    [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
                 ]
                 await loading_msg.edit_text(
                     result_text,
@@ -1365,7 +1241,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         await query.edit_message_text(
             "⏭️ Validasi dilewati.",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ])
         )
     
@@ -1534,6 +1410,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     mode = context.user_data.get('mode', '')
+    lang = context.user_data.get('lang', 'en')
     
     if mode == 'bin':
         await handle_bin_lookup(update, context)
@@ -1546,32 +1423,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif mode == 'checker':
         await handle_cc_checker(update, context)
     else:
-        welcome_text = """
-🎯 *HIRAKOX TOOLKIT v3.0*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📌 *FITUR TERSEDIA:*
-• 🔍 BIN Lookup & Detail
-• 🔢 Generate BIN + Validasi
-• 💳 Generate Kartu Kredit
-• 👤 Generate Identitas Palsu
-• ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Command)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💬 *Telegram:* @hirakox
-📌 *Version:* 3.0
-
-⚠️ *Untuk tujuan edukasi saja*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚡ Pilih menu di bawah untuk memulai:
-"""
         await update.message.reply_text(
-            welcome_text,
+            t('welcome', lang),
             reply_markup=get_main_menu(),
             parse_mode='Markdown'
         )
@@ -1582,6 +1435,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     document = update.message.document
     file_name = document.file_name
+    lang = context.user_data.get('lang', 'en')
     
     if not file_name.endswith('.txt'):
         await update.message.reply_text("❌ Hanya file .txt yang didukung!")
@@ -1606,7 +1460,7 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     bin_list.append(part)
         
         if not bin_list:
-            await loading_msg.edit_text("❌ Tidak ada BIN valid di file!")
+            await loading_msg.edit_text(t('no_valid_bin', lang))
             return
         
         if len(bin_list) > 100:
@@ -1622,7 +1476,7 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         results = parse_bin_results(html)
         if results:
-            result_text = f"✅ *Hasil {len(results)} BIN*\n━━━━━━━━━━━━━━━━━━━━\n\n"
+            result_text = t('results', lang).format(len(results))
             for idx, item in enumerate(results[:20], 1):
                 result_text += f"*{idx}. BIN:* `{item['bin']}`\n"
                 result_text += f"   🌍 {item['country']} | 🏛️ {item['vendor']}\n"
@@ -1630,11 +1484,11 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 result_text += f"   🏦 {item['bank']}\n\n"
             
             if len(results) > 20:
-                result_text += f"_... dan {len(results) - 20} hasil lainnya_"
+                result_text += t('and_more', lang).format(len(results) - 20)
             
             keyboard = [
-                [InlineKeyboardButton("📁 Export ke File", callback_data="export_bin")],
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+                [InlineKeyboardButton("📁 " + t('export_file', lang), callback_data="export_bin")],
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
             ]
             await loading_msg.edit_text(
                 result_text,
@@ -1700,7 +1554,9 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             card_display = raw[:24] + "..." if len(raw) > 24 else raw
             result_text += f"{i}. {status_icon} | `{card_display}`\n"
             if 'network' in result and result['network']:
-                result_text += f"   🏷️ {result['network']}\n"
+                result_text += f"   🏷️ Network: {result['network']}\n"
+            if 'message' in result and result['message']:
+                result_text += f"   📝 {result['message']}\n"
             result_text += "\n"
         
         result_text += f"📊 *SUMMARY*\n"
@@ -1712,7 +1568,7 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard = [
             [InlineKeyboardButton("📁 Export LIVE Cards", callback_data="export_live")],
             [InlineKeyboardButton("📁 Export Full Report", callback_data="export_full")],
-            [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+            [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
         ]
         await loading_msg.edit_text(
             result_text,
@@ -1722,32 +1578,8 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['checker_results'] = results
     
     else:
-        welcome_text = """
-🎯 *HIRAKOX TOOLKIT v3.0*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📌 *FITUR TERSEDIA:*
-• 🔍 BIN Lookup & Detail
-• 🔢 Generate BIN + Validasi
-• 💳 Generate Kartu Kredit
-• 👤 Generate Identitas Palsu
-• ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Command)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💬 *Telegram:* @hirakox
-📌 *Version:* 3.0
-
-⚠️ *Untuk tujuan edukasi saja*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚡ Pilih menu di bawah untuk memulai:
-"""
         await update.message.reply_text(
-            welcome_text,
+            t('welcome', lang),
             reply_markup=get_main_menu(),
             parse_mode='Markdown'
         )
@@ -1759,9 +1591,36 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
     command = parts[0].lower()
+    lang = context.user_data.get('lang', 'en')
     bindb = context.bot_data.get('bindb', BINDatabase())
     
-    if command == '/bin':
+    # ============ LANGUAGE COMMAND ============
+    if command == '/lang':
+        if len(parts) < 2:
+            await update.message.reply_text(
+                "🌍 *Change Language / Ganti Bahasa*\n"
+                "━━━━━━━━━━━━━━━━━━━━\n\n"
+                "📌 `/lang en` - English\n"
+                "📌 `/lang id` - Indonesia",
+                parse_mode='Markdown'
+            )
+            return
+        
+        new_lang = parts[1].lower()
+        if new_lang in ['en', 'id']:
+            context.user_data['lang'] = new_lang
+            await update.message.reply_text(
+                "✅ " + ("Language changed to English!" if new_lang == 'en' else "Bahasa diubah ke Indonesia!"),
+                parse_mode='Markdown'
+            )
+        else:
+            await update.message.reply_text(
+                "❌ Bahasa tidak valid!\nGunakan: `/lang en` atau `/lang id`",
+                parse_mode='Markdown'
+            )
+        return
+    
+    elif command == '/bin':
         await handle_bin_lookup(update, context)
     elif command == '/genbin':
         await handle_genbin(update, context)
@@ -1798,7 +1657,6 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ============ BIN DATABASE COMMANDS ============
     elif command == '/bindb':
         if len(parts) == 1:
-            # Tampilkan help
             await update.message.reply_text(
                 "📊 *BIN DATABASE*\n"
                 "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
@@ -1818,12 +1676,10 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         
         if parts[1].lower() == 'list':
-            # Tampilkan daftar negara
             countries = bindb.get_all_countries()
             list_text = "📋 *DAFTAR NEGARA*\n"
             list_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
             
-            # Tampilkan 30 negara per pesan
             for i, country in enumerate(countries, 1):
                 list_text += f"{i}. `{country}`\n"
                 if i % 30 == 0:
@@ -1838,7 +1694,6 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             return
         
-        # Ambil BIN
         if len(parts) < 3:
             await update.message.reply_text(
                 "❌ Format: `/bindb [negara] [jumlah]`\n"
@@ -1851,10 +1706,8 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         country = parts[1].lower()
         limit_str = parts[2].lower()
         
-        # Cek apakah negara valid
         countries = bindb.get_all_countries()
         if country not in countries:
-            # Coba cari yang mirip
             suggestions = [c for c in countries if country in c]
             if suggestions:
                 await update.message.reply_text(
@@ -1871,7 +1724,6 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             return
         
-        # Parse limit
         if limit_str == 'all':
             limit = None
         elif limit_str.isdigit():
@@ -1924,42 +1776,19 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     
     else:
-        welcome_text = """
-🎯 *HIRAKOX TOOLKIT v3.0*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📌 *FITUR TERSEDIA:*
-• 🔍 BIN Lookup & Detail
-• 🔢 Generate BIN + Validasi
-• 💳 Generate Kartu Kredit
-• 👤 Generate Identitas Palsu
-• ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Command)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💬 *Telegram:* @hirakox
-📌 *Version:* 3.0
-
-⚠️ *Untuk tujuan edukasi saja*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚡ Pilih menu di bawah untuk memulai:
-"""
         await update.message.reply_text(
-            welcome_text,
+            t('welcome', lang),
             reply_markup=get_main_menu(),
             parse_mode='Markdown'
         )
 
 # ============================================================
-# BIN LOOKUP (DENGAN DETAIL)
+# BIN LOOKUP (DENGAN DETAIL - PAKE bins.su)
 # ============================================================
 async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
+    lang = context.user_data.get('lang', 'en')
     bindb = context.bot_data.get('bindb', BINDatabase())
     
     if parts and parts[0] in ['/bin']:
@@ -1967,17 +1796,7 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not parts:
         await update.message.reply_text(
-            "🔍 *BIN LOOKUP & DETAIL*\n"
-            "━━━━━━━━━━━━━━━━━━━━\n\n"
-            "📌 Kirim BIN (6-8 digit):\n"
-            "Contoh: `414720` atau `414720 454789`\n\n"
-            "📋 *Info yang didapat:*\n"
-            "• Network (Visa/Mastercard/AMEX)\n"
-            "• Card Type (Credit/Debit)\n"
-            "• Level (Platinum/Standard/Gold)\n"
-            "• Bank Issuer\n"
-            "• Country & Country Code\n\n"
-            "📁 Atau upload file .txt",
+            t('bin_lookup_help', lang),
             parse_mode='Markdown'
         )
         return
@@ -1999,68 +1818,70 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
             i += 1
     
     if not bin_list:
-        await update.message.reply_text("❌ Tidak ada BIN valid!")
+        await update.message.reply_text(t('no_valid_bin', lang))
         return
     
-    # Jika hanya 1 BIN, tampilkan detail
+    # Jika hanya 1 BIN, coba ambil detail dari freebinchecker
     if len(bin_list) == 1:
         bin_num = bin_list[0]
+        
+        # Coba detail dari freebinchecker
         loading_msg = await update.message.reply_text(f"🔄 Mencari detail BIN {bin_num}...")
         await asyncio.sleep(0.5)
         await loading_msg.edit_text("⏳ Mengakses server...")
         await asyncio.sleep(0.5)
-        await loading_msg.edit_text(f"🔍 Mengambil detail BIN {bin_num}...")
-        await asyncio.sleep(0.5)
         
         detail = bindb.get_bin_detail(bin_num)
         
-        if detail:
-            result_text = f"🔍 *DETAIL BIN: {detail['BIN']}*\n"
+        if detail and detail['Network'] != "N/A":
+            result_text = t('bin_detail_title', lang).format(detail['BIN'])
             result_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            result_text += f"📌 *Card Information:*\n"
-            result_text += f"  • Network      : `{detail['Network']}`\n"
-            result_text += f"  • Card Type    : `{detail['Card Type']}`\n"
-            result_text += f"  • Level        : `{detail['Level']}`\n\n"
-            result_text += f"🏦 *Bank Issuer:*\n"
-            result_text += f"  • Bank Name    : `{detail['Bank']}`\n\n"
-            result_text += f"🌏 *Country Issuer:*\n"
-            result_text += f"  • Country      : `{detail['Country']}`\n"
-            result_text += f"  • Country Code : `{detail['Country Code']}`\n"
+            result_text += t('card_info', lang)
+            result_text += t('network', lang).format(detail['Network'])
+            result_text += t('card_type', lang).format(detail['Card Type'])
+            result_text += t('level', lang).format(detail['Level'])
+            result_text += "\n" + t('bank_info', lang)
+            result_text += t('bank_name', lang).format(detail['Bank'])
+            result_text += "\n" + t('country_info', lang)
+            result_text += t('country', lang).format(detail['Country'])
+            result_text += t('country_code', lang).format(detail['Country Code'])
             
             keyboard = [
-                [InlineKeyboardButton("🔙 Kembali", callback_data="back")],
-                [InlineKeyboardButton("🔍 Cek BIN Lain", callback_data="bin")]
+                [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")],
+                [InlineKeyboardButton("🔍 " + t('check_again', lang), callback_data="bin")]
             ]
             await loading_msg.edit_text(
                 result_text,
                 reply_markup=InlineKeyboardMarkup(keyboard),
                 parse_mode='Markdown'
             )
+            return
         else:
-            await loading_msg.edit_text(f"❌ Gagal mendapatkan detail BIN {bin_num}. Coba lagi nanti.")
-        return
+            # Jika gagal, coba via bins.su
+            await loading_msg.edit_text("🔄 Mencari via bins.su...")
+            await asyncio.sleep(0.5)
     
-    # Multiple BIN
+    # Multiple BIN atau fallback ke bins.su
     if len(bin_list) > 50:
-        await update.message.reply_text("⚠️ Maksimal 50 BIN per request!")
+        await update.message.reply_text(t('max_bin', lang))
         bin_list = bin_list[:50]
     
-    loading_msg = await update.message.reply_text("🔄 Mencari BIN...")
+    loading_msg = await update.message.reply_text(t('searching_bin', lang))
     await asyncio.sleep(0.5)
-    await loading_msg.edit_text("⏳ Mengirim request ke server...")
+    await loading_msg.edit_text(t('sending_request', lang))
     await asyncio.sleep(0.5)
-    await loading_msg.edit_text(f"🔍 Mencari {len(bin_list)} BIN...")
+    await loading_msg.edit_text(t('searching', lang).format(len(bin_list)))
     await asyncio.sleep(0.5)
     
     html = search_bin(bin_list, filters)
     if "Error" in html:
-        await loading_msg.edit_text(f"❌ Error: {html}")
+        await loading_msg.edit_text(t('error', lang).format(html))
         return
     
     results = parse_bin_results(html)
     
     if results:
-        result_text = f"✅ *Hasil {len(results)} BIN*\n━━━━━━━━━━━━━━━━━━━━\n\n"
+        result_text = t('results', lang).format(len(results))
         for idx, item in enumerate(results[:20], 1):
             result_text += f"*{idx}. BIN:* `{item['bin']}`\n"
             result_text += f"   🌍 {item['country']} | 🏛️ {item['vendor']}\n"
@@ -2068,11 +1889,11 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
             result_text += f"   🏦 {item['bank']}\n\n"
         
         if len(results) > 20:
-            result_text += f"_... dan {len(results) - 20} hasil lainnya_"
+            result_text += t('and_more', lang).format(len(results) - 20)
         
         keyboard = [
-            [InlineKeyboardButton("📁 Export ke File", callback_data="export_bin")],
-            [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+            [InlineKeyboardButton("📁 " + t('export_file', lang), callback_data="export_bin")],
+            [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
         ]
         await loading_msg.edit_text(
             result_text,
@@ -2089,6 +1910,7 @@ async def handle_bin_lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_genbin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
+    lang = context.user_data.get('lang', 'en')
     
     if parts and parts[0] in ['/genbin']:
         parts = parts[1:]
@@ -2148,6 +1970,7 @@ async def handle_genbin(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_generate_cards(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
+    lang = context.user_data.get('lang', 'en')
     
     month = context.user_data.get('cc_month', 'random')
     year = context.user_data.get('cc_year', 'random')
@@ -2220,7 +2043,7 @@ async def handle_generate_cards(update: Update, context: ContextTypes.DEFAULT_TY
         [InlineKeyboardButton("📁 Export Pipe", callback_data="export_pipe")],
         [InlineKeyboardButton("📁 Export Full", callback_data="export_full_cards")],
         [InlineKeyboardButton("⚙️ Pengaturan", callback_data="cc_settings")],
-        [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+        [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
     ]
     
     await loading_msg.edit_text(
@@ -2236,6 +2059,7 @@ async def handle_generate_cards(update: Update, context: ContextTypes.DEFAULT_TY
 async def handle_user_generate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
+    lang = context.user_data.get('lang', 'en')
     
     if parts and parts[0] in ['/user']:
         parts = parts[1:]
@@ -2276,7 +2100,7 @@ async def handle_user_generate(update: Update, context: ContextTypes.DEFAULT_TYP
     
     keyboard = [
         [InlineKeyboardButton("📁 Export ke File", callback_data="export_users")],
-        [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+        [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
     ]
     await loading_msg.edit_text(
         result_text,
@@ -2291,6 +2115,7 @@ async def handle_user_generate(update: Update, context: ContextTypes.DEFAULT_TYP
 async def handle_cc_checker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     lines = text.strip().split('\n')
+    lang = context.user_data.get('lang', 'en')
     
     if lines and lines[0].startswith('/check'):
         lines = [line.replace('/check', '').strip() for line in lines if line.strip()]
@@ -2365,7 +2190,7 @@ async def handle_cc_checker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("📁 Export LIVE Cards", callback_data="export_live")],
         [InlineKeyboardButton("📁 Export Full Report", callback_data="export_full")],
-        [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+        [InlineKeyboardButton("🔙 " + t('back', lang), callback_data="back")]
     ]
     await loading_msg.edit_text(
         result_text,
@@ -2401,6 +2226,7 @@ def main():
     
     # Register handlers
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("lang", handle_command))
     application.add_handler(CallbackQueryHandler(handle_callback_query))
     application.add_handler(MessageHandler(filters.Document.ALL, handle_file))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
