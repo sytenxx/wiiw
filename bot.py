@@ -944,7 +944,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • 💳 Generate Kartu Kredit
 • 👤 Generate Identitas Palsu
 • ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Scrape)
+• 📊 BIN Database (Command)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -971,7 +971,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     user_data = context.user_data
     bindb = context.bot_data.get('bindb', BINDatabase())
     
-    # ============ BIN LOOKUP (seperti sebelumnya + detail) ============
+    # ============ BIN LOOKUP ============
     if data == "bin":
         await query.edit_message_text(
             "🔍 *BIN LOOKUP & DETAIL*\n"
@@ -1069,15 +1069,37 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     
     # ============ BIN DATABASE ============
     elif data == "bindb":
+        await query.edit_message_text(
+            "📊 *BIN DATABASE*\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+            "📌 *Cara Penggunaan (COMMAND):*\n\n"
+            "📋 *Lihat daftar negara:*\n"
+            "`/bindb list`\n\n"
+            "📥 *Ambil BIN:*\n"
+            "`/bindb [negara] [jumlah]`\n\n"
+            "📝 *Contoh:*\n"
+            "• `/bindb indonesia 10` - ambil 10 BIN Indonesia\n"
+            "• `/bindb usa all` - ambil semua BIN USA\n"
+            "• `/bindb uk 50` - ambil 50 BIN UK\n\n"
+            "🌍 *Daftar negara:*\n"
+            "`/bindb list` untuk lihat semua negara\n\n"
+            "📁 *Export:* Hasil bisa di export ke file",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("📋 Lihat Negara", callback_data="bindb_list")],
+                [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
+            ]),
+            parse_mode='Markdown'
+        )
+        user_data['mode'] = 'bindb'
+    
+    elif data == "bindb_list":
         countries = bindb.get_all_countries()
-        user_data['bindb_countries'] = countries
         
-        # Pagination
+        # Tampilkan 20 negara per halaman
         page = user_data.get('bindb_page', 0)
-        per_page = 10
+        per_page = 20
         total_pages = (len(countries) - 1) // per_page + 1
         
-        # Reset page jika out of range
         if page < 0:
             page = 0
             user_data['bindb_page'] = 0
@@ -1088,63 +1110,43 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         start = page * per_page
         end = min(start + per_page, len(countries))
         
-        keyboard = []
-        for i, country in enumerate(countries[start:end], start+1):
-            keyboard.append([InlineKeyboardButton(f"{i}. {country.title()}", callback_data=f"bindb_country_{country}")])
+        list_text = f"📋 *DAFTAR NEGARA* (halaman {page+1}/{total_pages})\n"
+        list_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
         
-        # Navigasi
+        for i, country in enumerate(countries[start:end], start+1):
+            list_text += f"{i}. `{country}`\n"
+        
+        list_text += f"\nTotal {len(countries)} negara.\n"
+        list_text += "\n📌 *Cara pakai:* `/bindb [negara] [jumlah]`"
+        
+        keyboard = []
         nav_buttons = []
         if page > 0:
-            nav_buttons.append(InlineKeyboardButton("⬅️ Prev", callback_data="bindb_prev"))
+            nav_buttons.append(InlineKeyboardButton("⬅️ Prev", callback_data="bindb_list_prev"))
         if end < len(countries):
-            nav_buttons.append(InlineKeyboardButton("Next ➡️", callback_data="bindb_next"))
+            nav_buttons.append(InlineKeyboardButton("Next ➡️", callback_data="bindb_list_next"))
         if nav_buttons:
             keyboard.append(nav_buttons)
-        
-        keyboard.append([InlineKeyboardButton("🔙 Kembali", callback_data="back")])
+        keyboard.append([InlineKeyboardButton("🔙 Kembali", callback_data="bindb")])
         
         await query.edit_message_text(
-            f"📊 *BIN DATABASE*\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"📌 *Pilih Negara* (halaman {page+1}/{total_pages}):\n"
-            f"Total {len(countries)} negara tersedia.\n\n"
-            f"Setelah memilih, masukkan jumlah BIN yang ingin diambil.",
+            list_text,
             reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode='Markdown'
         )
-        user_data['mode'] = 'bindb'
     
-    elif data == "bindb_prev":
+    elif data == "bindb_list_prev":
         user_data['bindb_page'] = max(0, user_data.get('bindb_page', 0) - 1)
-        # Refresh menu
         await handle_callback_query(update, context)
     
-    elif data == "bindb_next":
+    elif data == "bindb_list_next":
         countries = bindb.get_all_countries()
-        per_page = 10
+        per_page = 20
         total_pages = (len(countries) - 1) // per_page + 1
         current_page = user_data.get('bindb_page', 0)
         if current_page < total_pages - 1:
             user_data['bindb_page'] = current_page + 1
         await handle_callback_query(update, context)
-    
-    elif data.startswith("bindb_country_"):
-        country = data.replace("bindb_country_", "")
-        user_data['bindb_selected_country'] = country
-        
-        await query.edit_message_text(
-            f"📊 *BIN DATABASE - {country.title()}*\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"📌 Masukkan jumlah BIN yang ingin diambil:\n"
-            f"• Kirim angka (contoh: `50`)\n"
-            f"• Kirim `all` untuk semua BIN\n\n"
-            f"⏳ Proses scraping akan memakan waktu beberapa detik.",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔙 Kembali", callback_data="bindb")]
-            ]),
-            parse_mode='Markdown'
-        )
-        user_data['mode'] = 'bindb_limit'
     
     elif data == "about":
         await query.edit_message_text(
@@ -1156,7 +1158,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "✓ Generate Kartu Kredit\n"
             "✓ Generate Identitas Palsu\n"
             "✓ CC Checker (Live/Die)\n"
-            "✓ BIN Database (Scrape)\n\n"
+            "✓ BIN Database (Command)\n\n"
             "⚡ *FITUR BOT:*\n"
             "✓ Format Pipe / Full\n"
             "✓ Output Text / File\n"
@@ -1191,7 +1193,9 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "✅ *CC CHECKER*\n"
             "`/check 414720...|12|26|123`\n\n"
             "📊 *BIN DATABASE*\n"
-            "Klik menu 'BIN Database' > Pilih negara > Masukkan jumlah\n\n"
+            "`/bindb list` - lihat daftar negara\n"
+            "`/bindb indonesia 10` - ambil 10 BIN\n"
+            "`/bindb usa all` - ambil semua\n\n"
             "📁 *Support File:* Upload .txt",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("🔙 Kembali", callback_data="back")]
@@ -1211,7 +1215,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
 • 💳 Generate Kartu Kredit
 • 👤 Generate Identitas Palsu
 • ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Scrape)
+• 📊 BIN Database (Command)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1541,8 +1545,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handle_user_generate(update, context)
     elif mode == 'checker':
         await handle_cc_checker(update, context)
-    elif mode == 'bindb_limit':
-        await handle_bindb_limit(update, context)
     else:
         welcome_text = """
 🎯 *HIRAKOX TOOLKIT v3.0*
@@ -1555,7 +1557,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • 💳 Generate Kartu Kredit
 • 👤 Generate Identitas Palsu
 • ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Scrape)
+• 📊 BIN Database (Command)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1573,73 +1575,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=get_main_menu(),
             parse_mode='Markdown'
         )
-
-# ============================================================
-# BIN DATABASE LIMIT HANDLER
-# ============================================================
-async def handle_bindb_limit(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handler untuk input jumlah BIN dari BIN Database"""
-    text = update.message.text.strip()
-    user_data = context.user_data
-    bindb = context.bot_data.get('bindb', BINDatabase())
-    
-    country = user_data.get('bindb_selected_country')
-    if not country:
-        await update.message.reply_text("❌ Silakan pilih negara terlebih dahulu dari menu BIN Database!")
-        return
-    
-    # Parse limit
-    if text.lower() == 'all':
-        limit = None
-    elif text.isdigit():
-        limit = int(text)
-        if limit < 1:
-            await update.message.reply_text("❌ Jumlah harus lebih dari 0!")
-            return
-    else:
-        await update.message.reply_text("❌ Masukkan angka yang valid atau 'all'!")
-        return
-    
-    loading_msg = await update.message.reply_text(f"📊 Mengambil BIN dari {country.title()}...\n⏳ Mohon tunggu...")
-    await asyncio.sleep(0.5)
-    await loading_msg.edit_text(f"🔄 Scraping {country.title()}...")
-    await asyncio.sleep(0.5)
-    
-    bins = bindb.scrape_bins(country, limit)
-    
-    if not bins:
-        await loading_msg.edit_text(f"❌ Tidak ada BIN ditemukan untuk {country.title()}!")
-        return
-    
-    user_data['scraped_bins'] = bins
-    
-    result_text = f"📊 *BIN DATABASE - {country.title()}*\n"
-    result_text += f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-    result_text += f"Total BIN: {len(bins)}\n\n"
-    
-    if len(bins) > 0:
-        result_text += "📋 *Sample 10 BIN pertama:*\n"
-        result_text += "```\n"
-        result_text += f"{'BIN':<12} | {'Network':<12} | {'Level':<12}\n"
-        result_text += "-"*40 + "\n"
-        for b in bins[:10]:
-            result_text += f"{b['BIN']:<12} | {b['Network']:<12} | {b['Level']:<12}\n"
-        result_text += "```"
-    
-    if len(bins) > 10:
-        result_text += f"\n_... dan {len(bins)-10} BIN lainnya_"
-    
-    keyboard = [
-        [InlineKeyboardButton("📁 Export ke File", callback_data="export_scrape")],
-        [InlineKeyboardButton("🔙 Kembali", callback_data="bindb")],
-        [InlineKeyboardButton("🔙 Main Menu", callback_data="back")]
-    ]
-    
-    await loading_msg.edit_text(
-        result_text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='Markdown'
-    )
 
 # ============================================================
 # HANDLE FILE
@@ -1798,7 +1733,7 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • 💳 Generate Kartu Kredit
 • 👤 Generate Identitas Palsu
 • ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Scrape)
+• 📊 BIN Database (Command)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1824,6 +1759,7 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     parts = text.split()
     command = parts[0].lower()
+    bindb = context.bot_data.get('bindb', BINDatabase())
     
     if command == '/bin':
         await handle_bin_lookup(update, context)
@@ -1858,6 +1794,135 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handle_user_generate(update, context)
     elif command == '/check':
         await handle_cc_checker(update, context)
+    
+    # ============ BIN DATABASE COMMANDS ============
+    elif command == '/bindb':
+        if len(parts) == 1:
+            # Tampilkan help
+            await update.message.reply_text(
+                "📊 *BIN DATABASE*\n"
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                "📌 *Cara Penggunaan (COMMAND):*\n\n"
+                "📋 *Lihat daftar negara:*\n"
+                "`/bindb list`\n\n"
+                "📥 *Ambil BIN:*\n"
+                "`/bindb [negara] [jumlah]`\n\n"
+                "📝 *Contoh:*\n"
+                "• `/bindb indonesia 10` - ambil 10 BIN Indonesia\n"
+                "• `/bindb usa all` - ambil semua BIN USA\n"
+                "• `/bindb uk 50` - ambil 50 BIN UK\n\n"
+                "🌍 *Daftar negara:*\n"
+                "`/bindb list` untuk lihat semua negara",
+                parse_mode='Markdown'
+            )
+            return
+        
+        if parts[1].lower() == 'list':
+            # Tampilkan daftar negara
+            countries = bindb.get_all_countries()
+            list_text = "📋 *DAFTAR NEGARA*\n"
+            list_text += "━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+            
+            # Tampilkan 30 negara per pesan
+            for i, country in enumerate(countries, 1):
+                list_text += f"{i}. `{country}`\n"
+                if i % 30 == 0:
+                    await update.message.reply_text(list_text, parse_mode='Markdown')
+                    list_text = ""
+                    await asyncio.sleep(0.5)
+            
+            if list_text:
+                await update.message.reply_text(
+                    list_text + f"\nTotal {len(countries)} negara.",
+                    parse_mode='Markdown'
+                )
+            return
+        
+        # Ambil BIN
+        if len(parts) < 3:
+            await update.message.reply_text(
+                "❌ Format: `/bindb [negara] [jumlah]`\n"
+                "Contoh: `/bindb indonesia 10`\n"
+                "Atau: `/bindb usa all`",
+                parse_mode='Markdown'
+            )
+            return
+        
+        country = parts[1].lower()
+        limit_str = parts[2].lower()
+        
+        # Cek apakah negara valid
+        countries = bindb.get_all_countries()
+        if country not in countries:
+            # Coba cari yang mirip
+            suggestions = [c for c in countries if country in c]
+            if suggestions:
+                await update.message.reply_text(
+                    f"❌ Negara '{country}' tidak ditemukan.\n"
+                    f"Mungkin maksud Anda: `{suggestions[0]}`?\n\n"
+                    f"Gunakan `/bindb list` untuk lihat semua negara.",
+                    parse_mode='Markdown'
+                )
+            else:
+                await update.message.reply_text(
+                    f"❌ Negara '{country}' tidak ditemukan.\n"
+                    f"Gunakan `/bindb list` untuk lihat semua negara.",
+                    parse_mode='Markdown'
+                )
+            return
+        
+        # Parse limit
+        if limit_str == 'all':
+            limit = None
+        elif limit_str.isdigit():
+            limit = int(limit_str)
+            if limit < 1:
+                await update.message.reply_text("❌ Jumlah harus lebih dari 0!")
+                return
+        else:
+            await update.message.reply_text("❌ Jumlah harus angka atau 'all'!")
+            return
+        
+        loading_msg = await update.message.reply_text(f"📊 Mengambil {limit if limit else 'semua'} BIN dari {country.title()}...\n⏳ Mohon tunggu...")
+        await asyncio.sleep(0.5)
+        await loading_msg.edit_text(f"🔄 Scraping {country.title()}...")
+        await asyncio.sleep(0.5)
+        
+        bins = bindb.scrape_bins(country, limit)
+        
+        if not bins:
+            await loading_msg.edit_text(f"❌ Tidak ada BIN ditemukan untuk {country.title()}!")
+            return
+        
+        context.user_data['scraped_bins'] = bins
+        
+        result_text = f"📊 *BIN DATABASE - {country.title()}*\n"
+        result_text += f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        result_text += f"Total BIN: {len(bins)}\n\n"
+        
+        if len(bins) > 0:
+            result_text += "📋 *Sample 10 BIN pertama:*\n"
+            result_text += "```\n"
+            result_text += f"{'BIN':<12} | {'Network':<12} | {'Level':<12}\n"
+            result_text += "-"*40 + "\n"
+            for b in bins[:10]:
+                result_text += f"{b['BIN']:<12} | {b['Network']:<12} | {b['Level']:<12}\n"
+            result_text += "```"
+        
+        if len(bins) > 10:
+            result_text += f"\n_... dan {len(bins)-10} BIN lainnya_"
+        
+        keyboard = [
+            [InlineKeyboardButton("📁 Export ke File", callback_data="export_scrape")],
+            [InlineKeyboardButton("🔙 Main Menu", callback_data="back")]
+        ]
+        
+        await loading_msg.edit_text(
+            result_text,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode='Markdown'
+        )
+    
     else:
         welcome_text = """
 🎯 *HIRAKOX TOOLKIT v3.0*
@@ -1870,7 +1935,7 @@ async def handle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • 💳 Generate Kartu Kredit
 • 👤 Generate Identitas Palsu
 • ✅ CC Checker (Live/Die)
-• 📊 BIN Database (Scrape)
+• 📊 BIN Database (Command)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -2346,6 +2411,7 @@ def main():
     application.add_handler(CommandHandler("genpipe", handle_generate_cards))
     application.add_handler(CommandHandler("user", handle_user_generate))
     application.add_handler(CommandHandler("check", handle_cc_checker))
+    application.add_handler(CommandHandler("bindb", handle_command))
     
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
